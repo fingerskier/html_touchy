@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <svg height="500" width="500">
+    <path
+      d="M 0 0 H 100 V 100 H 0 V 0"
+      id="buttonThing"
+    />
+  </svg>
+
+<script>
+(function(el) {
+  let active = 0
+  let fill = 'transparent'
+  let pressed = false
+  let pressure = {x:0,y:0}
+  let stroke = 'yellow'
+  let touches = {length:0}
+  let upward = false
+  let downward = false
+  let leftward = false
+  let rightward = false
+
+  const activationPressure = 5
+
+  ;
+  
+  const press = event=>{
+    event.preventDefault()
+    pressed = true
+    stroke = 'limegreen'
+  }
+  
+  const release = event=>{
+    event.preventDefault()
+    pressed = false
+    stroke = 'yellow'
+  }
+
+  const toggle = event=>{
+    event.preventDefault()
+    active = !active
+  }
+
+  const translation = ()=>{
+    return `translate(${pressure.x} ${pressure.y})`
+  }
+
+  const move = event=>{
+    event.preventDefault()
+    console.log(event)
+    if (pressed) {
+      let moveX = event.movementX || 0
+      let moveY = event.movementY || 0
+
+      console.log(moveX, moveY)
+
+      let pressureX = pressure.x + moveX
+      let pressureY = pressure.y + moveY
+
+      if (pressureX > activationPressure) pressureX = activationPressure
+      if (pressureX < -activationPressure) pressureX = -activationPressure
+      if (pressureY > activationPressure) pressureY = activationPressure
+      if (pressureY < -activationPressure) pressureY = -activationPressure
+      
+      pressure = {x:pressureX,y:pressureY}
+      touches = event.touches
+    }
+
+    rightward = (pressure.x >= activationPressure)
+    leftward = (pressure.x <= -activationPressure)
+    downward = (pressure.y >= activationPressure)
+    upward = (pressure.y <= -activationPressure)
+
+    console.log(pressure,upward,rightward,downward,leftward)
+  }
+
+  
+  el.addEventListener("touchstart", press, false);
+  el.addEventListener("touchend", release, false);
+  el.addEventListener("touchcancel", release, false);
+  el.addEventListener("touchmove", move, false);
+  el.addEventListener("mousedown", press, false);
+  el.addEventListener("mouseup", release, false);
+  el.addEventListener("mousemove", move, false);
+  el.addEventListener("click", toggle, false);
+})(document.getElementById("buttonThing"))
+</script>
+</body>
+</html>
